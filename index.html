@@ -1,0 +1,87 @@
+ <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>폴리야 내 마음을 읽어줘</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col align-self-center">
+            <div class="col align-self-center">
+                <br>
+                <br>
+                <h4>번역하고 싶은 문장을 입력하세요(한국어->영어)</h4>
+                <h5 id="resultText"></h5>
+                <form action="javascript:void(0)">
+                    <div class="form-group">
+                        
+                        <textarea class="form-control" id="textInput" rows="3"></textarea>
+                    </div>
+                    <button onclick="sendReqeust()" class="btn btn-primary">입력하기</button>
+                </form>
+            
+            <br>
+            <br>
+            <h4>폴리에게 듣고 싶은 문장을 입력하세요(한국어/영어)</h4>
+            <textarea class="form-control" id="text" rows="3" ></textarea>
+            <br>
+            <h6>영어로 입력했을 시 Joanna를, 한국어로 입력했을 시 Seoyeon을 선택하세요</h6>
+         
+            <select id="voice">
+                <option>Joanna</option>
+                <option>Seoyeon</option>
+            </select>
+            <br>
+            <br>
+            <button id="play-button" class="btn btn-primary">들어보기</button>
+             </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+
+    (function(){
+
+        const elemPlayButton=document.querySelector("#play-button");
+        const elemVoice=document.querySelector("#voice");
+        const elemText=document.querySelector("#text");
+
+        elemPlayButton.addEventListener("click",function(){
+
+            let url="https://2z245nsw3a.execute-api.ap-northeast-2.amazonaws.com/default/lambda-for-polly?";
+            url+="&voice="+encodeURIComponent(elemVoice.value);
+            url+="&text="+encodeURIComponent(elemText.value);
+
+            const elemAudio=document.createElement("AUDIO");
+            document.body.appendChild(elemAudio);
+            elemAudio.controls=true;
+            elemAudio.src=url;
+            elemAudio.play();
+
+        });
+    }());
+</script>
+<script type="text/javascript">
+    var inputSelector = document.querySelector('#textInput');
+    var resultText = document.querySelector('#resultText');
+
+    function sendReqeust() {
+        resultText.innerHTML = "로딩중..."
+        fetch("https://1qct424mp9.execute-api.ap-northeast-2.amazonaws.com/default/lambda-for-translate-service", {
+            method: "POST",
+            body: JSON.stringify({
+              text:inputSelector.value
+            })
+        }).then(function (response) {
+          return response.text().then(function(text) {
+                resultText.innerHTML = text;
+          });
+        })
+    }
+</script>
+</html>
